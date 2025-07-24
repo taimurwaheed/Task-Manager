@@ -1,35 +1,27 @@
 import type { Task, TaskAction } from '../types/task.types';
+import {
+    addTask,
+    toggleTask,
+    deleteTask,
+    editTask,
+    clearCompletedTasks,
+    loadTasks,
+} from './tasks';
 
 export const tasksReducer = (state: Task[], action: TaskAction): Task[] => {
     switch (action.type) {
         case 'ADD_TASK':
-            return [
-                ...state,
-                {
-                    id: Date.now(),
-                    text: action.payload,
-                    completed: false,
-                    createdAt: new Date()
-                }
-            ];
+            return addTask(state, action.payload);
         case 'TOGGLE_TASK':
-            return state.map(task =>
-                task.id === action.payload
-                    ? { ...task, completed: !task.completed }
-                    : task
-            );
+            return toggleTask(state, action.payload);
         case 'DELETE_TASK':
-            return state.filter(task => task.id !== action.payload);
+            return deleteTask(state, action.payload);
         case 'EDIT_TASK':
-            return state.map(task =>
-                task.id === action.payload.id
-                    ? { ...task, text: action.payload.text }
-                    : task
-            );
+            return editTask(state, action.payload);
         case 'CLEAR_COMPLETED':
-            return state.filter(task => !task.completed);
+            return clearCompletedTasks(state);
         case 'LOAD_TASKS':
-            return action.payload;
+            return loadTasks(action.payload);
         default:
             return state;
     }
