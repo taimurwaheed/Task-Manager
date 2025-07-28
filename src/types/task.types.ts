@@ -20,12 +20,3 @@ export interface Stats {
     active: number;
     completed: number;
 }
-
-export interface TaskContextType {
-    tasks: Task[];
-    dispatch: React.Dispatch<TaskAction>;
-    filter: FilterType;
-    setFilter: React.Dispatch<React.SetStateAction<FilterType>>;
-    stats: Stats;
-    filteredTasks: Task[];
-}
