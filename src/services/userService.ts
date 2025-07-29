@@ -21,7 +21,6 @@ export class UserService {
             const user: User = await this.client.get(`/users/${id}`);
             console.log("Fetched users by ID:", user);
             if (user && user.email === email && user.password === password) {
-                localStorage.setItem('userId', user.id);
                 return user;
             }
             return null;
