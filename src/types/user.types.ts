@@ -8,6 +8,4 @@ export type AuthContextType = {
     user: any;
     login: (user: any) => void;
     logout: () => void;
-    hasSignedUp: boolean;
-    setHasSignedUp: (value: boolean) => void;
 };

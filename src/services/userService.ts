@@ -9,16 +9,28 @@ export class UserService {
     }
 
     async signupUser(data: { email: string; password: string }) {
-        const users = await this.client.get('/users');
-        const existingUser = users.find((u: User) => u.email === data.email);
-        if (existingUser) throw new Error('Email already registered');
+        const users: User[] = await this.client.get(`/users?email=${data.email}`);
+        if (users.length > 0) {
+            throw new Error('Email already registered');
+        }
         return await this.client.post('/users', data);
     }
 
-    async loginUser(email: string, password: string): Promise<User | null> {
-        const users: User[] = await this.client.get('/users');
-        return users.find((u) => u.email === email && u.password === password) ?? null;
+    async loginUser(id: string, email: string, password: string): Promise<User | null> {
+        try {
+            const user: User = await this.client.get(`/users/${id}`);
+            console.log("Fetched users by ID:", user);
+            if (user && user.email === email && user.password === password) {
+                localStorage.setItem('userId', user.id);
+                return user;
+            }
+            return null;
+        } catch (error) {
+            console.error('Login failed:', error);
+            return null;
+        }
     }
+
 
     async getAllUsers(): Promise<User[]> {
         return await this.client.get('/users');
