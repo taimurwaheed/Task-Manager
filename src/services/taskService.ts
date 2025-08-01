@@ -1,4 +1,4 @@
-import type { Task } from '../types/task.types';
+import type { NewTask, Task } from '../types/task.types';
 import { ApiClient } from './apiClient';
 
 export class TaskService {
@@ -12,7 +12,7 @@ export class TaskService {
         return this.client.get('/tasks');
     }
 
-    async addTask(task: Task) {
+    async addTask(task: NewTask) {
         return this.client.post('/tasks', task);
     }
 

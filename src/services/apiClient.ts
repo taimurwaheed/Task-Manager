@@ -12,8 +12,12 @@ export class ApiClient {
                 ...(headers || {}),
             },
         });
-        if (!response.ok) throw new Error(`GET ${endpoint} failed`);
+        if (response.status === 404) {
+            return [];
+        }
+        if (!response.ok) throw new Error(`GET ${endpoint} failed with status ${response.status}`);
         return response.json();
+
     }
 
     async post(endpoint: string, data: any, headers?: HeadersInit) {

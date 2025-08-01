@@ -1,9 +1,13 @@
-const App: React.FC = () => {
+import { AppProvider } from './context/AppContext';
+import { AppRoutes } from './routing/AppRoutes';
+import './index.css';
+
+function App() {
   return (
-    <>
-      <h1 className="m-6 text-3xl font-bold font-sans">Task Manager Setup</h1>
-    </>
+    <AppProvider>
+      <AppRoutes />
+    </AppProvider>
   );
-};
+}
 
 export default App;
