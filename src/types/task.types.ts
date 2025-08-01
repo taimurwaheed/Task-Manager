@@ -1,9 +1,11 @@
 export interface Task {
-    id: number;
+    id: string;
     text: string;
     completed: boolean;
     createdAt: Date;
 }
+
+export type NewTask = Omit<Task, 'id'>;
 
 export type FilterType = 'all' | 'active' | 'completed';
 
