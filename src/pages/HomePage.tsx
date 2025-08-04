@@ -1,9 +1,7 @@
-import React, { useState, useEffect } from 'react';
 import { useAuth } from '../auth/AuthContext';
-import { useAppContext } from '../context/AppContext';
 import { useNavigate } from 'react-router-dom';
-import type { Task, FilterType } from '../types/task.types';
-import { calculateStats, filterTasks } from '../utils/taskUtils';
+import { useTasks } from '../hooks/useTasks';
+
 import { TaskHeader } from '../components/TaskHeader';
 import { TaskStats } from '../components/TaskStats';
 import { TaskInputForm } from '../components/TaskInputForm';
@@ -12,99 +10,27 @@ import { TaskList } from '../components/TaskList';
 
 export function HomePage() {
     const { user, logout } = useAuth();
-    const { taskService } = useAppContext();
     const navigate = useNavigate();
 
-    const [tasks, setTasks] = useState<Task[]>([]);
-    const [filter, setFilter] = useState<FilterType>('all');
-    const [loading, setLoading] = useState(false);
-    const [taskInput, setTaskInput] = useState('');
-
-    const fetchTasks = async () => {
-        setLoading(true);
-        try {
-            const fetchedTasks = await taskService.getTasks();
-            const tasksWithDates = fetchedTasks.map((task: any) => ({
-                ...task,
-                createdAt: new Date(task.createdAt),
-            }));
-            setTasks(tasksWithDates);
-        } catch (error) {
-            console.error("Failed to fetch tasks:", error);
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        fetchTasks();
-    }, []);
+    const {
+        filter,
+        setFilter,
+        loading,
+        taskInput,
+        setTaskInput,
+        handleAddTask,
+        handleToggleTask,
+        handleDeleteTask,
+        handleEditTask,
+        handleClearCompleted,
+        filteredTasks,
+        stats
+    } = useTasks();
 
     const handleLogout = () => {
         logout();
         navigate('/login');
     };
-
-    const handleAddTask = async (e: React.FormEvent) => {
-        e.preventDefault();
-        if (taskInput.trim()) {
-            try {
-                const newTask = { text: taskInput.trim(), completed: false, createdAt: new Date() };
-                await taskService.addTask(newTask);
-                setTaskInput('');
-                await fetchTasks();
-            } catch (error) {
-                console.error("Failed to add task:", error);
-            }
-        }
-    };
-
-    const handleToggleTask = async (id: string) => {
-        const taskToUpdate = tasks.find(task => task.id === id);
-        if (!taskToUpdate) return;
-        const updatedTask = { ...taskToUpdate, completed: !taskToUpdate.completed };
-        try {
-            await taskService.updateTask(id, updatedTask);
-            await fetchTasks();
-        } catch (error) {
-            console.error("Failed to toggle task:", error);
-        }
-    };
-
-    const handleDeleteTask = async (id: string) => {
-        try {
-            await taskService.deleteTask(id);
-            await fetchTasks();
-        } catch (error) {
-            console.error("Failed to delete task:", error);
-        }
-    };
-
-    const handleEditTask = async (id: string, text: string) => {
-        const taskToUpdate = tasks.find(task => task.id === id);
-        if (!taskToUpdate) return;
-        const updatedTask = { ...taskToUpdate, text };
-        try {
-            await taskService.updateTask(id, updatedTask);
-            await fetchTasks();
-        } catch (error) {
-            console.error("Failed to edit task:", error);
-        }
-    };
-
-    const handleClearCompleted = async () => {
-        const completedTasks = tasks.filter(task => task.completed);
-        const deletePromises = completedTasks.map(task => taskService.deleteTask(task.id));
-        try {
-            await Promise.all(deletePromises);
-            await fetchTasks();
-        } catch (error) {
-            console.error("Failed to clear completed tasks:", error);
-        }
-    };
-
-    const filteredTasks = filterTasks(tasks, filter);
-    const stats = calculateStats(tasks);
 
     if (loading) {
         return (
