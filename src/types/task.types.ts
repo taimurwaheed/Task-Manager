@@ -9,16 +9,21 @@ export type NewTask = Omit<Task, 'id'>;
 
 export type FilterType = 'all' | 'active' | 'completed';
 
-export type TaskAction =
-    | { type: 'ADD_TASK'; payload: string }
-    | { type: 'TOGGLE_TASK'; payload: number }
-    | { type: 'DELETE_TASK'; payload: number }
-    | { type: 'EDIT_TASK'; payload: { id: number; text: string } }
-    | { type: 'CLEAR_COMPLETED' }
-    | { type: 'LOAD_TASKS'; payload: Task[] };
+export interface TaskInputFormProps {
+    taskInput: string;
+    setTaskInput: (input: string) => void;
+    handleAddTask: (e: React.FormEvent) => Promise<void>;
+}
 
 export interface Stats {
     total: number;
     active: number;
     completed: number;
+}
+
+export interface TaskListProps {
+    filteredTasks: Task[];
+    handleToggleTask: (id: string) => Promise<void>;
+    handleDeleteTask: (id: string) => Promise<void>;
+    handleEditTask: (id: string, text: string) => Promise<void>;
 }
